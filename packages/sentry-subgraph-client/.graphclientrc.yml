@@ -2,7 +2,7 @@ sources:
   - name: sentry
     handler:
       graphql:
-        endpoint: https://subgraph.satsuma-prod.com/f37507ea64fb/xai/sentry/api
+        endpoint: https://api.goldsky.com/api/public/project_cmh50tw8e0001sqp25vrrff4t/subgraphs/sentry/2.0.1/gn
     transforms:
       - autoPagination:
           # You might want to disable schema validation for faster startup

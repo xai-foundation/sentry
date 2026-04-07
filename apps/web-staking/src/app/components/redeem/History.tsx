@@ -16,7 +16,7 @@ import { MODAL_BODY_TEXT } from "./Constants";
 import { WriteFunctions, executeContractWrite } from "@/services/web3.writes";
 import { BaseModal, PrimaryButton } from "@/app/components/ui";
 import { TextButton } from "@/app/components/ui/buttons";
-import { useBlockIp, useGetKYCApprovedForRedemptionClaim } from "@/app/hooks";
+import { useGetKYCApprovedForRedemptionClaim } from "@/app/hooks";
 import { listOfCountries } from "../constants/constants";
 import { RedemptionRequest } from "@/services/redemptions.service";
 import useGetRedemptions from "@/app/hooks/useGetRedemptions";
@@ -153,7 +153,6 @@ export default function History() {
 	
 	// Comment out for #188413859 / #188457183, needs to go back in post contract upgrade (for reference search for story id)
 	const { isApproved } = useGetKYCApprovedForRedemptionClaim();
-	const { loading } = useBlockIp();
 	const { chainId } = useAccount();	
 	const { redemptions, loadRedemptions, redemptionsLoading } = useGetRedemptions();
 
@@ -243,7 +242,7 @@ export default function History() {
 		          modalHeader="Pass KYC to claim" 
 		          modalBody={<>Your wallet must pass KYC first before you are able to claim. <br className="hidden lg:block" /> To start KYC, first choose your country before continuing.</>} 
 		          submitText="CONTINUE"
-				  isDisabled={loading || isInvalidCountry(selectedCountry)}
+				  isDisabled={isInvalidCountry(selectedCountry)}
 				  isDropdown
 				  selectedCountry={selectedCountry}
 				  setSelectedCountry={setSelectedCountry}

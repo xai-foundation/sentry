@@ -2,6 +2,8 @@ import React from "react";
 import MyPoolComponent from "../components/pool/MyPoolComponent";
 import { Metadata } from "next";
 
+export const dynamic = "force-dynamic";
+
 export const metadata: Metadata = {
   title: "My Pools",
   description: "Xai App My Pools"

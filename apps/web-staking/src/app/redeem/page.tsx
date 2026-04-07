@@ -1,6 +1,8 @@
 import { Metadata } from "next";
 import RedeemComponent from "../components/redeem/RedeemComponent";
 
+export const dynamic = 'force-dynamic';
+
 export const metadata: Metadata = {
   title: "Redeem",
   description: "Xai App Redeem"

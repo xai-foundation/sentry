@@ -1,4 +1,3 @@
-export *  from './useBlockIp';
 export *  from './useGetAvailableKeysForStaking';
 export *  from './useGetBalance';
 export *  from './useGetEsXaiAllowance';

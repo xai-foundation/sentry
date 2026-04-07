@@ -4,16 +4,13 @@ import {useState} from "react";
 import {BiLoaderAlt} from "react-icons/bi";
 import {config, isValidNetwork, NodeLicenseAbi} from "@sentry/core";
 import {FaCircleCheck} from "react-icons/fa6";
-import {useBlockIp} from "@/hooks/useBlockIp";
 import { useAppKit } from '@reown/appkit/react';
 import { WarningNotification } from "@sentry/ui/src/rebrand/notifications";
 import { KYCTooltip } from "@/features/checkout/components/KYCTooltip";
 import { useListClaimableAmount } from "@/features/hooks";
-import IpBlockText from "@sentry/ui/src/rebrand/text/IpBlockText";
 import { useNetworkConfig } from "@/hooks/useNetworkConfig";
 
 export function DropClaim() {
-	const {blocked, loading} = useBlockIp({blockUsa: true});
 
 	const {open} = useAppKit()
     const { chainId, address, isDevelopment} = useNetworkConfig();
@@ -38,22 +35,6 @@ export function DropClaim() {
 	};
 
 	const {isPending: isRedeemFromWhitelistLoading, writeContract, error, isSuccess} = useWriteContract();
-
-	if (loading) {
-		return (
-			<div className="w-full h-screen flex justify-center items-center">
-				<BiLoaderAlt className="animate-spin" size={32} color={"#F30919"}/>
-			</div>
-		);
-	}
-
-	if (blocked) {
-		return (
-			<div className='w-full h-screen flex justify-center items-center'>
-				<IpBlockText classNames="p-2 text-md text-white" />
-			</div>
-		);
-	}
 
 	function handleConnectClick() {
 		open();

@@ -1,5 +1,4 @@
 import React, { useState } from "react";
-import { useBlockIp } from "@/app/hooks";
 import { PrimaryButton } from '../../../../../../packages/ui/src/rebrand/buttons/PrimaryButton';
 import ExternalLinkIcon from "../../../../../../packages/ui/src/rebrand/icons/ExternalLinkIcon";
 import { listOfCountries } from "../constants/constants";
@@ -9,7 +8,6 @@ import { SearchableDropdown, SearchableDropdownItem } from "../ui/dropdowns/Sear
 const UserVerificationKYC = () => {
   const [selectedCountry, setSelectedCountry] = useState<string | null>("");
   const [isOpen, setIsOpen] = useState<boolean>(false);
-  const { blocked, loading } = useBlockIp();
   
   function onClickHelper() {
     if (selectedCountry) {
@@ -45,10 +43,10 @@ const UserVerificationKYC = () => {
     </SearchableDropdownItem>
   ));
 
-  const isBlocked = () => blocked || selectedCountry === "United States";
+  const isBlocked = () => selectedCountry === "United States";
   
   const isInvalidCountry = () => { 
-    if (isBlocked() || loading) {
+    if (isBlocked()) {
       return true;
     }
     if (listOfCountries.filter(item => item.label === selectedCountry).length === 0) {

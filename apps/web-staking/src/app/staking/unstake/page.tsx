@@ -1,6 +1,8 @@
 import StakeV1Component from "@/app/components/stake/StakeV1Component";
 import { Metadata } from "next";
 
+export const dynamic = 'force-dynamic';
+
 export const metadata: Metadata = {
   title: "Unstake esXAI",
   description: "Xai App Unstake esXAI"
