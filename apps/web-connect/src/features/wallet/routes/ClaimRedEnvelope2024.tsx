@@ -2,17 +2,14 @@ import {useWriteContract } from "wagmi";
 import {useState, useEffect} from "react";
 import {XaiCheckbox} from "@sentry/ui";
 import {useNavigate} from "react-router-dom";
-import {useBlockIp} from "@/hooks/useBlockIp";
 import {BiLoaderAlt} from "react-icons/bi";
 import {XaiGaslessClaimAbi, config, isValidNetwork} from "@sentry/core";
 import {ethers} from "ethers";
 import { XaiBanner } from "@/features/checkout/components/XaiBanner";
-import IpBlockText from "@sentry/ui/src/rebrand/text/IpBlockText";
 import { useNetworkConfig } from "@/hooks/useNetworkConfig";
 
 export function ClaimRedEnvelope2024() {
 	// TODO update all to new contract
-	const {blocked, loading} = useBlockIp({blockUsa: true});
     const { chainId, address:_address, isDevelopment} = useNetworkConfig();
 	const address = _address?.toLowerCase();
 	const navigate = useNavigate();
@@ -45,22 +42,6 @@ export function ClaimRedEnvelope2024() {
 			.then(response => response.json())
 			.then(data => setPermits(data));
 	}, []);
-
-	if (loading) {
-		return (
-			<div className="w-full h-screen flex justify-center items-center">
-				<BiLoaderAlt className="animate-spin" size={32} color={"#000000"}/>
-			</div>
-		)
-	}
-
-	if (blocked) {
-		return (
-			<div className='w-full h-screen flex justify-center items-center'>				
-				<IpBlockText classNames="p-2 text-md text-white" />
-			</div>
-		)
-	}
 
 	if (isLoading) {
 		return (

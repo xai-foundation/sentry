@@ -3,15 +3,12 @@ import {useListNodeLicenses} from "@/hooks/useListNodeLicenses";
 import {BiLoaderAlt} from "react-icons/bi";
 import {useEffect, useState} from "react";
 import {checkKycStatus, isValidNetwork, xaiRedEnvelopeAbi} from "@sentry/core";
-import {useBlockIp} from "@/hooks/useBlockIp";
 import {FaCircleCheck, FaCircleXmark} from "react-icons/fa6";
 import {Link} from "react-router-dom";
 import { config } from "@sentry/core";
-import IpBlockText from "@sentry/ui/src/rebrand/text/IpBlockText";
 import { useNetworkConfig } from "@/hooks/useNetworkConfig";
 
 export function RedEnvelope2024() {
-	const {blocked, loading: loadingGeo} = useBlockIp({blockUsa: true});
     const { chainId, address, isDevelopment} = useNetworkConfig();
 
 	// check license balance
@@ -62,22 +59,6 @@ export function RedEnvelope2024() {
 	// 		console.warn("Error", error);
 	// 	},
 	// });
-
-	if (loadingGeo) {
-		return (
-			<div className="w-full h-screen flex justify-center items-center">
-				<BiLoaderAlt className="animate-spin" size={32} color={"#000000"}/>
-			</div>
-		);
-	}
-
-	if (blocked) {
-		return (
-			<div className='w-full h-screen flex justify-center items-center'>
-				<IpBlockText classNames="p-2 text-md text-white" />
-			</div>
-		);
-	}
 
 	// function attemptSubmit() {
 	// 	setInputError("");

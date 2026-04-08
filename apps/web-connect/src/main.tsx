@@ -3,7 +3,6 @@ import ReactDOM from 'react-dom/client'
 import { Config, cookieToInitialState, WagmiProvider } from 'wagmi'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import './index.css'
-import { IpLocationChecker } from './features/ipchecker/IpLocationChecker'
 import xaiThumbnail from './assets/images/xai-preview.jpg'
 import { Helmet, HelmetProvider } from 'react-helmet-async'
 import App, { wagmiAdapter } from './app/App'
@@ -80,9 +79,7 @@ ReactDOM.createRoot(document.getElementById('root')!).render(
           <base href={window.location.origin} />
         </Helmet>
         <React.StrictMode>
-          <IpLocationChecker>
             <App />
-          </IpLocationChecker>
         </React.StrictMode>
       </QueryClientProvider>
     </WagmiProvider>

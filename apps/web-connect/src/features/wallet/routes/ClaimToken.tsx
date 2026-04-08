@@ -2,19 +2,16 @@ import {useWriteContract } from "wagmi";
 import {useState, useEffect} from "react";
 import {ConnectButton, XaiCheckbox} from "@sentry/ui";
 import {useNavigate} from "react-router-dom";
-import {useBlockIp} from "@/hooks/useBlockIp";
 import {BiLoaderAlt} from "react-icons/bi";
 import { XaiGaslessClaimAbi, config, isValidNetwork} from "@sentry/core";
 import {ethers} from "ethers";
 import { useAppKit } from '@reown/appkit/react';
 import { WarningNotification } from "@sentry/ui/src/rebrand/notifications";
-import IpBlockText from "@sentry/ui/src/rebrand/text/IpBlockText";
 import { useNetworkConfig } from "@/hooks/useNetworkConfig";
 
 
 export function ClaimToken() {
 	const {open} = useAppKit()
-	const {blocked, loading} = useBlockIp({blockUsa: true});
     const { chainId, address:_address, isDevelopment} = useNetworkConfig();
 	const address = _address?.toLowerCase();
 	const navigate = useNavigate();
@@ -47,22 +44,6 @@ export function ClaimToken() {
 			.then(response => response.json())
 			.then(data => setPermits(data));
 	}, []);
-
-	if (loading) {
-		return (
-			<div className="w-full h-screen flex justify-center items-center">
-				<BiLoaderAlt className="animate-spin" size={32} color={"#F30919"}/>
-			</div>
-		)
-	}
-
-	if (blocked) {
-		return (
-			<div className='w-full h-screen flex justify-center items-center'>
-				<IpBlockText classNames="p-2 text-md text-white" />
-			</div>
-		)
-	}
 
 	if (isLoading) {
 		return (
