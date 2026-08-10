@@ -1,8 +1,8 @@
 # Stage 1: Build Stage
-FROM node:20.11.0-alpine AS build
+FROM node:22-alpine AS build
 
 # Install pnpm globally
-RUN npm i -g pnpm@9.7.0 nx@18.3.3
+RUN npm i -g pnpm@10.32.1 nx@18.3.3
 
 # Set the working directory inside the container
 WORKDIR /app
@@ -21,7 +21,7 @@ RUN npx nx build @sentry/web-connect
 
 
 # Stage 2: Release Stage (Production)
-FROM node:20.11.0-alpine AS release
+FROM node:22-alpine AS release
 
 # Install the 'serve' package globally to serve static files
 RUN npm install -g serve

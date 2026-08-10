@@ -6,6 +6,7 @@
   "license": "UNLICENSED",
   "author": "",
   "main": "index.js",
+  "packageManager": "pnpm@10.32.1",
   "scripts": {
     "build": "pnpm -filter @sentry/sentry-subgraph-client run build && pnpm -r -filter !@sentry/sentry-subgraph-client -filter !@sentry/sentry-subgraph run build",
     "clean": "pnpm recursive -filter !@sentry/sentry-subgraph-client run clean",
@@ -35,6 +36,17 @@
     "unzipper": "0.10.14"
   },
   "pnpm": {
+    "onlyBuiltDependencies": [
+      "@sentry/cli",
+      "bufferutil",
+      "electron",
+      "esbuild",
+      "keccak",
+      "nx",
+      "secp256k1",
+      "sharp",
+      "utf-8-validate"
+    ],
     "overrides": {
       "lodash@<4.17.11": ">=4.17.11",
       "lodash@<4.17.21": ">=4.17.21",

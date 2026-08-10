@@ -13,5 +13,7 @@
       "@sentry-node/*": ["../../packages/*/src"]
     }
   },
-
+  "include": [
+    "src/**/*"
+  ]
 }
