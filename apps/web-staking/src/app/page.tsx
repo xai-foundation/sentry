@@ -11,12 +11,13 @@ export const metadata: Metadata = {
 };
 
 export default async function Home({ searchParams }: {
-  searchParams: { chainId: number | undefined }
+  searchParams: Promise<{ chainId: number | undefined }>
 }) {
+  const { chainId } = await searchParams;
 
   let networkData!: INetworkData;
   try {
-    networkData = await getNetworkData(getNetwork(searchParams.chainId));
+    networkData = await getNetworkData(getNetwork(chainId));
   } catch (err) {
     console.error("Failed to load pools", err);
   }

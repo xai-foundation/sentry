@@ -40,7 +40,7 @@ export default function StakeKeysDetailReviewComponent({ pool, inputValue, onBac
 		hash: receipt,
 	});
 
-	const toastId = useRef<Id>();
+	const toastId = useRef<Id | undefined>(undefined);
 
 
 	const onConfirm = async () => {

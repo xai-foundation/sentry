@@ -12,17 +12,18 @@ type StakeParams = {
   poolAddress: string;
 }
 
-export default async function StakeKeysForPool({ params }: { params: StakeParams }) {
+export default async function StakeKeysForPool({ params }: { params: Promise<StakeParams> }) {
+  const { poolAddress } = await params;
 
   let isBannedPool: boolean = false;
   try {
 
-    isBannedPool = await isPoolBanned(params.poolAddress);
+    isBannedPool = await isPoolBanned(poolAddress);
   } catch (error) {
     console.error("Failed to load pool", error);
   }
 
   return (
-    <StakeKeysComponent poolAddress={params.poolAddress} isBannedPool={isBannedPool} />
+    <StakeKeysComponent poolAddress={poolAddress} isBannedPool={isBannedPool} />
   );
 }

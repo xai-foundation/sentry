@@ -51,7 +51,7 @@ const EditDetailsComponent = ( { bannedWords }: { bannedWords: string[] }) => {
 
   const router = useRouter();
 
-  const toastId = useRef<Id>();
+  const toastId = useRef<Id | undefined>(undefined);
 
   const updateOnSuccess = useCallback(() => {
     updateNotification(

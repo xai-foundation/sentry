@@ -44,7 +44,7 @@ const SummaryComponent = ({ isBannedPool, poolFromDb }: { isBannedPool: boolean,
 
   const [isClaimRequest, setIsClaimRequest] = useState(false);
   const [receipt, setReceipt] = useState<`0x${string}` | undefined>();
-  const toastId = useRef<Id>();
+  const toastId = useRef<Id | undefined>(undefined);
   const [unstakeRequestIndex, setUnstakeRequestIndex] = useState<number>();
 
   // Substitute Timeouts with useWaitForTransaction

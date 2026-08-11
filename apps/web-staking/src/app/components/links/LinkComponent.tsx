@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { ElementType } from "react";
+import { ElementType, JSX } from "react";
 
 interface LinkComponentProps {
   link: string;

@@ -54,7 +54,7 @@ export const DashboardComponent = ({
     hash: receipt,
   });
 
-  const toastId = useRef<Id>();
+  const toastId = useRef<Id | undefined>(undefined);
 
   const onClaimRewards = async () => {
     if (isLoading) {

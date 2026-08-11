@@ -59,7 +59,7 @@ const DashboardStakingInfo = ({
   }, [totalClaimableAmount]);
 
 
-  const toastId = useRef<Id>();
+  const toastId = useRef<Id | undefined>(undefined);
 
   const onClaimXaiRedemptions = async (redemption: RedemptionRequest) => {
     if (!chainId) {

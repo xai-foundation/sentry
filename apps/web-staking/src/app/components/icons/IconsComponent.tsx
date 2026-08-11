@@ -387,7 +387,6 @@ export function SearchIcon({
         fontFamily="none"
         fontWeight="none"
         fontSize="none"
-        textAnchor="none"
         style={{
           mixBlendMode: "normal",
         }}

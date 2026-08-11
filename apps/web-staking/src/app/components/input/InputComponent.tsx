@@ -2,6 +2,7 @@ import { Input } from "@nextui-org/input";
 import { ChangeEventHandler, KeyboardEvent, ReactNode, useCallback } from "react";
 import { ErrorCircle } from "../icons/IconsComponent";
 
+
 interface CustomInputProps {
   onChange?: ChangeEventHandler;
   label: string | undefined;

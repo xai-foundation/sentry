@@ -38,7 +38,7 @@ const EditRewardsComponent = () => {
     hash: receipt,
   });
 
-  const toastId = useRef<Id>();
+  const toastId = useRef<Id | undefined>(undefined);
 
   const onConfirm = async () => {
     toastId.current = loadingNotification("Transaction pending...");

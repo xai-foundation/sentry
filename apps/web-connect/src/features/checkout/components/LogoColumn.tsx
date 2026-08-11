@@ -1,3 +1,4 @@
+import { JSX } from "react";
 import logo from "../../../../public/images/sentry-main.png";
 import { useTranslation } from "react-i18next";
 
