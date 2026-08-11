@@ -9,7 +9,7 @@
   "main": "dist/index.js",
   "bin": "build/sentry-node-cli.js",
   "scripts": {
-    "build": "pnpm run compile && pnpm run transpile && pkg ./build/sentry-node-cli.js --targets=node18-linux-x64,node18-macos-x64,node18-win-x64 --out-path=release",
+    "build": "pnpm run compile && pnpm run transpile && pkg ./build/sentry-node-cli.js --targets=node22-linux-x64,node22-macos-x64,node22-win-x64 --out-path=release",
     "clean": "rimraf dist && rimraf release && rimraf build && rimraf tsconfig.tsbuildinfo",
     "compile": "tsc",
     "lint": "eslint . --ext .ts,.tsx",
@@ -32,7 +32,7 @@
     "@types/commander": "^2.12.2",
     "@types/inquirer": "9.0.7",
     "@types/inquirer-autocomplete-prompt": "3.0.3",
-    "esbuild": "^0.19.4",
-    "pkg": "^5.8.1"
+    "@yao-pkg/pkg": "^6.22.0",
+    "esbuild": "^0.19.4"
   }
 }

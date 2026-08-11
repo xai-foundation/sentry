@@ -3,8 +3,8 @@ import {NodeLicenseAbi} from '../abis/index.js';
 import {config} from '../config.js';
 import {getProvider} from '../utils/getProvider.js';
 import {Tier} from './index.js';
-import tierData from './tiers.json' assert { type: "json" };
-import tkTierData from './tk_tiers.json' assert { type: "json" };
+import tierData from './tiers.json' with { type: "json" };
+import tkTierData from './tk_tiers.json' with { type: "json" };
 import { checkRefereeBulkSubmissionCompatible } from '../operator/checkRefereeBulkSubmissionCompatible.js';
 
 /**
