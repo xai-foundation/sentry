@@ -10,7 +10,11 @@ import { LegalLink, LinkComponent, LinkLogoComponent } from "../links/LinkCompon
 export default function SidebarComponent() {
   const { chainId } = useAccount();
 
-  const [activePage, setActivePage] = useState(sessionStorage.getItem("activePage") || `/${window?.location?.pathname?.split("/")[1]}`);
+  const [activePage, setActivePage] = useState(() =>
+    typeof window === "undefined"
+      ? ""
+      : sessionStorage.getItem("activePage") || `/${window?.location?.pathname?.split("/")[1]}`
+  );
   const handleClick = (page: string) => {
     setActivePage(page);
     sessionStorage.setItem("activePage", page);

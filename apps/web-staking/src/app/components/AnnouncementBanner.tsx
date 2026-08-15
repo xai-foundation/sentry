@@ -16,7 +16,7 @@ const AnnouncementBanner = ({ title, text, href, activateBanner, bannerVersion, 
 
     const sessionKey = `announcement_banner_${bannerVersion}`
 
-    const [isShow, setIsShow] = useState<number>(Number(sessionStorage.getItem(sessionKey)));
+    const [isShow, setIsShow] = useState<number>(0);
 
     useEffect(() => {
         const value = sessionStorage.getItem(sessionKey) || Number(activateBanner);

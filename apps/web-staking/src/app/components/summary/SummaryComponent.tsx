@@ -28,7 +28,7 @@ import { PoolInfo } from "@/types/Pool";
 
 const SummaryComponent = ({ isBannedPool, poolFromDb }: { isBannedPool: boolean, poolFromDb?: PoolInfo }) => {
   const router = useRouter();
-  const activePage = sessionStorage.getItem("activePage");
+  const activePage = typeof window === "undefined" ? null : sessionStorage.getItem("activePage");
   const [refreshPoolInfo, setRefreshPoolInfo] = useState(false);
   const [refreshUnstakeRequests, setRefreshUnstakeRequests] = useState(false);
   const { tiers } = useGetTiers();
