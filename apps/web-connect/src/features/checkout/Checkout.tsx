@@ -33,7 +33,6 @@ export function Checkout() {
         mintWithEth,
         mintWithXai,
         approve,
-        mintWithCrossmint,
         isBatchMinting,
         txHashes,
         //batchMintTx
@@ -44,11 +43,11 @@ export function Checkout() {
     }
 
     useEffect(() => {
-        if (!stakingTabOpened && (mintWithEth.isSuccess || mintWithXai.isSuccess || mintWithCrossmint.txHash != "")) {
+        if (!stakingTabOpened && (mintWithEth.isSuccess || mintWithXai.isSuccess)) {
             setStakingTabOpened(true);
             window.open(stakingPageURL, '_blank');
         }
-    }, [mintWithEth.isSuccess, mintWithXai.isSuccess, mintWithCrossmint.txHash]);
+    }, [mintWithEth.isSuccess, mintWithXai.isSuccess]);
 
     return (
         <div>
@@ -56,7 +55,7 @@ export function Checkout() {
 
                 {mintWithEth.isPending || mintWithXai.isPending || approve.isPending || isBatchMinting ? (
                     <TransactionInProgress />
-                ) : mintWithEth.isSuccess || mintWithXai.isSuccess || mintWithCrossmint.txHash != "" || (!isBatchMinting && txHashes.length > 0) ? (
+                ) : mintWithEth.isSuccess || mintWithXai.isSuccess || (!isBatchMinting && txHashes.length > 0) ? (
                     <PurchaseSuccessful returnToClient={returnToClient} />
                 ) : (
                     <div className="h-auto sm:w-[90%] lg:w-auto flex sm:flex-col lg:flex-row justify-center bg-nulnOil shadow-main md:my-0 my-[24px]">

@@ -15,11 +15,6 @@ export interface UseWebBuyKeysOrderTotalProps {
     initialQuantity: number;
 }
 
-export interface MintWithCrossmintStatus {
-    txHash: string,
-    orderIdentifier: string
-}
-
 export interface UseWebBuyKeysOrderTotalReturn extends UseContractWritesReturn, UseMintBatchReturn {
     isTotalLoading: boolean;
     isExchangeRateLoading: boolean;
@@ -64,8 +59,6 @@ export interface UseWebBuyKeysOrderTotalReturn extends UseContractWritesReturn, 
     blockExplorer: string;
     chainId: number | undefined;
     isConnected: boolean;
-    mintWithCrossmint: MintWithCrossmintStatus
-    setMintWithCrossmint: React.Dispatch<React.SetStateAction<MintWithCrossmintStatus>>
 }
 
 /**
@@ -91,7 +84,6 @@ export function useWebBuyKeysOrderTotal(initialQuantity: number, prefilledPromoC
     });
     const [currency, setCurrency] = useState<Currency>(CURRENCIES.AETH);
     const [quantity, setQuantity] = useState<number>(initialQuantity);
-    const [mintWithCrossmint, setMintWithCrossmint] = useState<MintWithCrossmintStatus>({ txHash: "", orderIdentifier: "" });
 
     const { tokenBalance, ethBalance } = useUserBalances(currency);
     const { tokenAllowance, refetchAllowance } = useCurrencyHandler(currency, address);
@@ -236,8 +228,6 @@ export function useWebBuyKeysOrderTotal(initialQuantity: number, prefilledPromoC
         blockExplorer: providerData?.blockExplorer ?? '',
         chainId,
         isConnected,
-        mintWithCrossmint,
-        setMintWithCrossmint,
         ...mintBatch,
         ...contractWrites
     };

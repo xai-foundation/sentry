@@ -23,7 +23,7 @@ const salePageBaseURL = `https://${VITE_APP_ENV === "development" ? "develop." :
 const operatorDownloadLink = "https://github.com/xai-foundation/sentry/releases/latest"
 
 const PurchaseSuccessful: React.FC<IPurchaseSuccessful> = ({ returnToClient }) => {
-	const { mintWithEth, mintWithXai, mintWithCrossmint, blockExplorer, txHashes } = useWebBuyKeysContext();
+	const { mintWithEth, mintWithXai, blockExplorer, txHashes } = useWebBuyKeysContext();
 
 	const { address } = useAccount();
 	const [isTooltipAllowedToOpen, setIsTooltipAllowedToOpen] = useState(false);
@@ -36,14 +36,13 @@ const PurchaseSuccessful: React.FC<IPurchaseSuccessful> = ({ returnToClient }) =
 		setAllTxHashes([
 			...txHashes,
 			...(mintWithEth.data ? [mintWithEth.data] : []),
-			...(mintWithXai.data ? [mintWithXai.data] : []),
-			...(mintWithCrossmint.txHash ? [mintWithCrossmint.txHash] : [])
+			...(mintWithXai.data ? [mintWithXai.data] : [])
 		]);
 
-	}, [mintWithEth.data, mintWithXai.data, mintWithCrossmint.txHash, txHashes]);
+	}, [mintWithEth.data, mintWithXai.data, txHashes]);
 
 	const getHash = () => {
-		let hash = mintWithEth.data ?? mintWithXai.data ?? mintWithCrossmint.txHash;
+		let hash: string | undefined = mintWithEth.data ?? mintWithXai.data;
 		if (!hash) {
 			hash = txHashes[0];
 		}
