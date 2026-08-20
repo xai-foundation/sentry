@@ -41,10 +41,10 @@
     "@types/lodash.isequal": "^4.5.8",
     "@types/react": "^18.2.15",
     "@types/react-dom": "^18.2.7",
-    "@vitejs/plugin-react": "^4.0.4",
+    "@vitejs/plugin-react": "^5.2.0",
     "eslint-plugin-react-hooks": "^4.6.0",
     "eslint-plugin-react-refresh": "^0.4.3",
-    "vite": "^4.4.5",
-    "vite-plugin-svgr": "^3.2.0"
+    "vite": "^7.3.6",
+    "vite-plugin-svgr": "^5.2.0"
   }
 }
