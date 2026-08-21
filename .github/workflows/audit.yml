@@ -1,0 +1,40 @@
+name: Dependency audit
+
+on:
+  pull_request:
+  workflow_dispatch:
+  schedule:
+    # Weekly. New advisories get published against dependencies that have not
+    # changed, so this needs to run on a timer and not only on pull requests.
+    - cron: "0 6 * * 1"
+
+jobs:
+  audit:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - uses: pnpm/action-setup@v4
+        name: Install pnpm
+        with:
+          version: 10
+          run_install: false
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: 'pnpm'
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Audit shipped code
+        # pnpm audit exits non-zero whenever it finds anything, and GitHub runs
+        # steps with `bash -e -o pipefail`, so the report is written to a file
+        # first and the pass/fail decision is left to the script.
+        run: |
+          pnpm audit --json > audit.json || true
+          node .github/scripts/audit-scope.mjs < audit.json
