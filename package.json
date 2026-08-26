@@ -50,7 +50,7 @@
     "overrides": {
       "@types/react": "19.2.18",
       "@types/react-dom": "19.2.4",
-      "axios": "^1.19.0",
+      "axios": "^1.20.0",
       "ws@>=2.1.0 <5.2.4": ">=5.2.4",
       "elliptic": "^6.6.1",
       "sha.js": "^2.4.12",
