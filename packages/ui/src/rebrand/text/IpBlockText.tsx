@@ -1,3 +1,4 @@
+import { JSX } from "react";
 /**
  * Interface representing the props for the IpBlockText component.
  * @interface IpBlockTextProps
