@@ -11,7 +11,8 @@
     "clean": "rimraf dist && rimraf dist-electron && rimraf release && rimraf public/web && rimraf tsconfig.tsbuildinfo && rimraf vite.config.js && rimraf vite.config.d.ts",
     "dev": "vite",
     "lint": "eslint src --ext ts,tsx --report-unused-disable-directives --max-warnings 0",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "test:preload": "node test/preload.test.cjs"
   },
   "dependencies": {
     "@radix-ui/react-tooltip": "^1.0.7",

@@ -77,7 +77,7 @@ export function useChainDataWithCallback() {
 
 	useEffect(() => {
 
-		const handleConfigUpdate = (_event, message) => {
+		const handleConfigUpdate = (message) => {
 			if (message === "arbitrumSepolia") {
 				setConfigByChainId(TESTNET_ID);
 			} else {

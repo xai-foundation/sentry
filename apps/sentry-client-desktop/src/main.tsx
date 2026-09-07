@@ -55,6 +55,6 @@ if (!rootElement.innerHTML) {
 postMessage({payload: 'removeLoading'}, '*')
 
 // Use contextBridge
-window.ipcRenderer.on('main-process-message', (_event, message) => {
+window.ipcRenderer.on('main-process-message', (message) => {
 	log.info(message)
 })
