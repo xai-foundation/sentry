@@ -1,7 +1,6 @@
 import {useSetAtom} from "jotai";
 import {drawerStateAtom, DrawerView} from "../drawer/DrawerManager";
 import { WarningIcon } from "@sentry/ui/src/rebrand/icons";
-import { PrimaryButton } from "@sentry/ui";
 
 export function NoKeys() {
 	const setDrawerState = useSetAtom(drawerStateAtom);
@@ -14,15 +13,8 @@ export function NoKeys() {
 					You do not own any keys
 				</p>
 				<p className="text-lg text-americanSilver">
-					Purchase a key to be able to begin accruing esXAI
+					Sentry Node Keys are no longer available for purchase
 				</p>
-                <div className="flex justify-center">
-				<PrimaryButton
-					onClick={() => setDrawerState(DrawerView.BuyKeys)}
-					className="w-[202px] text-[20px] font-bold uppercase !py-1 !global-cta-clip-path text-melanzaneBlack"
-					btnText="Purchase keys"
-				/>
-                </div>
 				<p className="text-lg text-americanSilver mt-2">
 					Already own a key?
 

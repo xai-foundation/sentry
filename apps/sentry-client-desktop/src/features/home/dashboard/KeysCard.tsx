@@ -1,5 +1,4 @@
-import {drawerStateAtom, DrawerView} from "@/features/drawer/DrawerManager";
-import {useAtomValue, useSetAtom} from "jotai";
+import {useAtomValue} from "jotai";
 import {chainStateAtom} from "@/hooks/useChainDataWithCallback";
 import {CustomTooltip} from "@sentry/ui";
 import {AiFillWarning} from "react-icons/ai";
@@ -9,11 +8,9 @@ import { HelpIcon } from "@sentry/ui/src/rebrand/icons/IconsComponents";
 import { useOperatorRuntime } from "@/hooks/useOperatorRuntime";
 import { RiKey2Line } from "react-icons/ri";
 import BaseCallout from "@sentry/ui/src/rebrand/callout/BaseCallout";
-import {TextButton} from "@sentry/ui/dist/src/rebrand/buttons/TextButton";
 import { getKeyCountFromOperatorData } from "@/utils/getKeyCountFromOperatorData";
 
 export function KeysCard() {
-	const setDrawerState = useSetAtom(drawerStateAtom);
 	const {owners, operatorWalletData} = useAtomValue(chainStateAtom);
 	const {accruing} = useAtomValue(accruingStateAtom);
 	const { sentryRunning } = useOperatorRuntime();
@@ -33,13 +30,6 @@ export function KeysCard() {
 						>
 						<HelpIcon width={14} height={14} fill="#A19F9F"/>
 					</CustomTooltip>
-				</div>
-				<div className="flex flex-row justify-between items-center gap-1">
-					<TextButton
-						onClick={() => setDrawerState(DrawerView.BuyKeys)}
-						buttonText={"Buy Keys"}
-						className="text-lg uppercase !px-0 !py-0 max-h-[28px]"
-					/>
 				</div>
 			</div>
 			<div className="py-4 px-6 flex">

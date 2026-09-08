@@ -3,7 +3,6 @@ import {IoMdCloseCircle} from "react-icons/io";
 import {useSetAtom} from "jotai";
 import {drawerStateAtom, DrawerView} from "../../../drawer/DrawerManager";
 import { WarningIcon } from "@sentry/ui/src/rebrand/icons";
-import { PrimaryButton } from "@sentry/ui";
 
 export function ActionsRequiredBuyDrawer() {
 	const setDrawerState = useSetAtom(drawerStateAtom);
@@ -30,15 +29,6 @@ export function ActionsRequiredBuyDrawer() {
 						No Xai Sentry Node Keys found in all added wallets
 					</p>
 
-					<div className="pb-2 font-semibold pl-6 mb-[5px]">
-						<PrimaryButton
-							onClick={() => setDrawerState(DrawerView.BuyKeys)}
-							className={`w-[155px] text-lg !py-1`}
-							btnText="PURCHASE KEY"
-							colorStyle="primary"
-							size="sm"
-						/>
-					</div>
 
 					<p className="text-lg text-bananaBoat pl-6 font-medium">
 						Already own a key?
