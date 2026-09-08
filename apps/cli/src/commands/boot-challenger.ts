@@ -102,7 +102,11 @@ const initCli = async () => {
 const onAssertionConfirmedCb = async (nodeNum: any) => {
     console.log(`[${new Date().toISOString()}] Assertion confirmed ${nodeNum}. Looking up the assertion information...`);
 
-    
+    // Receiving a NodeConfirmed event proves our RPC is healthy and assertions are flowing.
+    // Reset the health-check clock here so a backup whose RPC recovered doesn't keep alerting
+    // when isSubmitTime is false because the primary already submitted.
+    lastAssertionTime = Date.now();
+
     const {isSubmitTime, currentChallenge} = await isChallengeSubmitTime();
     const lastChallengeTime = Number(currentChallenge.createdTimestamp);
 
@@ -162,7 +166,7 @@ const onAssertionConfirmedCb = async (nodeNum: any) => {
     console.log(`[${new Date().toISOString()}] Assertion ${nodeNum} not submitted because it has not been ${config.minSecondsBetweenChallenges / 60 } minutes since the last assertion.`);
 };
 
-const checkTimeSinceLastAssertion = async (lastAssertionTime: number) => {
+const checkTimeSinceLastAssertion = async () => {
     const currentTime = Date.now();
     console.log(`[${new Date().toISOString()}] The currentTime is ${currentTime}`);
 
@@ -171,24 +175,29 @@ const checkTimeSinceLastAssertion = async (lastAssertionTime: number) => {
         criticalAmount += (CHALLENGER_INSTANCE * 60 * 1000);
     }
 
-    if (currentTime - lastAssertionTime > criticalAmount) {
-        let missedAssertion;
-        try {
-            missedAssertion = await findMissedAssertion();
-        } catch (error) {
-            console.log(`[${new Date().toISOString()}] Failed to findMissedAssertion (${error}).`);
-            sendNotification(`Error: Challenger instance ${CHALLENGER_INSTANCE} failed to findMissedAssertion`);
-        }
+    if (currentTime - lastAssertionTime <= criticalAmount) return;
 
-        const timeSinceLastAssertion = Math.round((currentTime - lastAssertionTime) / 60000);
-        console.log(`[${new Date().toISOString()}] It has been ${timeSinceLastAssertion} minutes since the last assertion. Please check the Rollup Protocol (https://arbiscan.io/address/${config.rollupAddress}).`);
-        if (missedAssertion !== null) {
-            console.log(`[${new Date().toISOString()}] Found NodeConfirm event that has not been posted: AssertionId: ${missedAssertion}`);
-            sendNotification(`It has been ${timeSinceLastAssertion} minutes since the last assertion - **A NODE CONFIRM EVENT HAS NOT BEEN SUBMITTED FOR CHALLENGE (Assertion: ${missedAssertion}) !**. Please check the challenger runtime and the RPC (${config.arbitrumOneWebSocketUrl})`);
-        } else {
-            sendNotification(`It has been ${timeSinceLastAssertion} minutes since the last assertion - No NodeConfirm events have been missed. Please check the Rollup Protocol (https://arbiscan.io/address/${config.rollupAddress}).`);
-        }
+    let missedAssertion: Number | null | undefined;
+    let rpcHealthy = false;
+    try {
+        missedAssertion = await findMissedAssertion();
+        rpcHealthy = true;
+    } catch (error) {
+        console.log(`[${new Date().toISOString()}] Failed to findMissedAssertion (${error}).`);
+        sendNotification(`Error: Challenger instance ${CHALLENGER_INSTANCE} failed to findMissedAssertion`);
+        return;
     }
+
+    // RPC is back and chain is caught up — resync our clock so we stop alerting.
+    if (rpcHealthy && missedAssertion == null) {
+        lastAssertionTime = currentTime;
+        return;
+    }
+
+    const timeSinceLastAssertion = Math.round((currentTime - lastAssertionTime) / 60000);
+    console.log(`[${new Date().toISOString()}] It has been ${timeSinceLastAssertion} minutes since the last assertion. Please check the Rollup Protocol (https://arbiscan.io/address/${config.rollupAddress}).`);
+    console.log(`[${new Date().toISOString()}] Found NodeConfirm event that has not been posted: AssertionId: ${missedAssertion}`);
+    sendNotification(`It has been ${timeSinceLastAssertion} minutes since the last assertion - **A NODE CONFIRM EVENT HAS NOT BEEN SUBMITTED FOR CHALLENGE (Assertion: ${missedAssertion}) !**. Please check the challenger runtime and the RPC (${config.arbitrumOneWebSocketUrl})`);
 };
 
 const sendNotification = async (message: string) => {
@@ -336,7 +345,7 @@ export function bootChallenger(cli: Command) {
             });
 
             const assertionCheckInterval = setInterval(() => {
-                checkTimeSinceLastAssertion(lastAssertionTime);
+                checkTimeSinceLastAssertion();
             }, 5 * 60 * 1000);
 
             for (; currentNumberOfRetries <= NUM_ASSERTION_LISTENER_RETRIES; currentNumberOfRetries++) {
