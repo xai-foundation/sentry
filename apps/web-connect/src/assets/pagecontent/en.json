@@ -12,6 +12,11 @@
 		"twitter": "X"
 	},
 	"Checkout": {
+		"mintingDisabled": {
+			"title": "Key sales have ended",
+			"description": "New Sentry Node Keys are no longer available for purchase. This page has been retired and it is no longer possible to mint keys here.",
+			"existingKeys": "Existing keys are unaffected. You can continue to run your node, assign and unassign operator wallets, and claim rewards exactly as before."
+		},
 		"updatingTotal": "Updating total...",
 		"transactionPending": "Transaction in progress…",
 		"backButton": "Back",

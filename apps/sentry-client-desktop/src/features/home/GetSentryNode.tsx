@@ -2,7 +2,6 @@ import {RiKey2Line} from "react-icons/ri";
 import {FiGift, FiGitCommit} from "react-icons/fi";
 import {drawerStateAtom, DrawerView} from "../drawer/DrawerManager";
 import {useSetAtom} from "jotai";
-import {PrimaryButton} from "@sentry/ui";
 import img from '@/assets/images/dashboard-card.png';
 import {TextButton} from "@sentry/ui/dist/src/rebrand/buttons/TextButton";
 
@@ -10,7 +9,7 @@ import {TextButton} from "@sentry/ui/dist/src/rebrand/buttons/TextButton";
 const body = [
 	{
 		icon: <RiKey2Line className="w-8 h-8 text-[#FF012F] mb-2"/>,
-		header: "PURCHASE KEYS",
+		header: "ASSIGN YOUR KEYS",
 		body: "The more keys you own, the more esXAI you will earn",
 	},
 	{
@@ -54,16 +53,9 @@ export function GetSentryNode() {
 				</div>
 
 				<span className="text-lg text-americanSilver mt-4">
-					Purchase a key to begin earning esXAI
+					Sentry Node Keys are no longer available for purchase
 				</span>
 				<div className="flex items-center justify-start mt-5 gap-7 mb-[120px]">
-					<div className="max-w-[202px]">
-					<PrimaryButton
-						onClick={() => setDrawerState(DrawerView.BuyKeys)}
-						btnText="Purchase Key"
-						className="w-[202px] text-[20px] uppercase !py-1 !global-cta-clip-path text-melanzaneBlack"
-					/>
-                    </div>
 					<TextButton
 						className="text-xl text-pelati cursor-pointer font-bold"
 						onClick={() => setDrawerState(DrawerView.ViewKeys)}

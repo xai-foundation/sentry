@@ -1,4 +1,4 @@
-import { useCallback } from 'react';
+import { JSX, useCallback } from 'react';
 import MainCheckbox from "@sentry/ui/src/rebrand/checkboxes/MainCheckbox";
 import { KYCTooltip } from "./KYCTooltip";
 import { useWebBuyKeysContext } from '../contexts/useWebBuyKeysContext';

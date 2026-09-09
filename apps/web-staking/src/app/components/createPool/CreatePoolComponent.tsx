@@ -69,7 +69,7 @@ const CreatePoolComponent = ({ bannedWords }: { bannedWords: string[] }) => {
 
   const [delegateAddress, setDelegateAddress] = useState("");
   const ref = useRef<null | HTMLDivElement>(null);
-  const toastId = useRef<Id>();
+  const toastId = useRef<Id | undefined>(undefined);
 
   const onConfirm = async (numKeys: number) => {
 

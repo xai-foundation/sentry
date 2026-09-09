@@ -1,13 +1,10 @@
-import {drawerStateAtom, DrawerView} from "@/features/drawer/DrawerManager";
 import {useSetAtom} from "jotai";
 import {useOperator} from "@/features/operator";
 import {modalStateAtom, ModalView} from "@/features/modal/ModalManager";
 import {PrimaryButton} from "@sentry/ui";
-import {TextButton} from "@sentry/ui/dist/src/rebrand/buttons/TextButton";
 import { config } from "@sentry/core";
 
 export function AssignKeysFromNewWallet() {
-	const setDrawerState = useSetAtom(drawerStateAtom);
 	const setModalState = useSetAtom(modalStateAtom);
 	const {isLoading: isOperatorLoading, publicKey: operatorAddress} = useOperator();
 
@@ -34,15 +31,6 @@ export function AssignKeysFromNewWallet() {
 			/>
 
 
-			<p className="flex items-center text-lg font-medium text-elementalGrey mt-[27px]">
-				Don't own any keys?
-
-				<TextButton
-					onClick={() => setDrawerState(DrawerView.BuyKeys)}
-					className="text-pelati underline font-normal text-lg cursor-pointer !py-0"
-					buttonText={"Purchase keys"}
-				/>
-			</p>
 		</div>
 	);
 }

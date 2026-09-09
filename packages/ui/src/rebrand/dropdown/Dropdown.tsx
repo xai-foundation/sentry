@@ -1,4 +1,4 @@
-import {Dispatch, MutableRefObject, ReactNode, SetStateAction, useEffect, useRef} from "react";
+import {Dispatch, JSX, MutableRefObject, ReactNode, SetStateAction, useEffect, useRef} from "react";
 import { DropdownArrow } from "../icons/DropArrowIcon";
 import { WarningIcon } from "../icons/WarningIcon";
 

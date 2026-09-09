@@ -28,7 +28,7 @@ import { PoolInfo } from "@/types/Pool";
 
 const SummaryComponent = ({ isBannedPool, poolFromDb }: { isBannedPool: boolean, poolFromDb?: PoolInfo }) => {
   const router = useRouter();
-  const activePage = sessionStorage.getItem("activePage");
+  const activePage = typeof window === "undefined" ? null : sessionStorage.getItem("activePage");
   const [refreshPoolInfo, setRefreshPoolInfo] = useState(false);
   const [refreshUnstakeRequests, setRefreshUnstakeRequests] = useState(false);
   const { tiers } = useGetTiers();
@@ -44,7 +44,7 @@ const SummaryComponent = ({ isBannedPool, poolFromDb }: { isBannedPool: boolean,
 
   const [isClaimRequest, setIsClaimRequest] = useState(false);
   const [receipt, setReceipt] = useState<`0x${string}` | undefined>();
-  const toastId = useRef<Id>();
+  const toastId = useRef<Id | undefined>(undefined);
   const [unstakeRequestIndex, setUnstakeRequestIndex] = useState<number>();
 
   // Substitute Timeouts with useWaitForTransaction

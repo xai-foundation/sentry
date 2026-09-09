@@ -1,8 +1,8 @@
 import {HasKeys} from "./HasKeys.js";
 import {NoKeys} from "./NoKeys.js";
-import {drawerStateAtom, DrawerView} from "../drawer/DrawerManager";
+import {drawerStateAtom} from "../drawer/DrawerManager";
 import {useAtom, useAtomValue} from "jotai";
-import {CustomTooltip, PrimaryButton} from "@sentry/ui";
+import {CustomTooltip} from "@sentry/ui";
 import {BiLoaderAlt} from "react-icons/bi";
 import {chainStateAtom, useChainDataRefresh} from "@/hooks/useChainDataWithCallback";
 import {useCombinedOwners} from "@/hooks/useCombinedOwners";
@@ -21,7 +21,7 @@ export function Keys() {
 		operatorWalletData,
 		totalKeys
 	} = useAtomValue(chainStateAtom);
-	const [drawerState, setDrawerState] = useAtom(drawerStateAtom);
+	const [drawerState] = useAtom(drawerStateAtom);
 	const {combinedOwners, walletAssignedMap} = useCombinedOwners(owners);
 	const {refresh} = useChainDataRefresh();
 
@@ -63,15 +63,6 @@ export function Keys() {
 					>
 						<MdRefresh/> Refresh
 					</a>
-                    <div className="ml-3">
-					<PrimaryButton
-						className={`text-xl uppercase font-bold !py-1 !px-[14px]`}
-						onClick={() => setDrawerState(DrawerView.BuyKeys)}
-						btnText="Purchase keys"
-						colorStyle="outline"
-						size="sm"
-					/>
-					</div>
 				</div>
 
 				{drawerState === null && (

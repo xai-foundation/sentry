@@ -1,3 +1,4 @@
+import { JSX } from "react";
 import { WarningIcon } from "@sentry/ui/src/rebrand/icons";
 import { Tooltip, XaiNumberInput, InfoPointRed, RedSentryIcon } from "@sentry/ui";
 import { useWebBuyKeysContext } from '../contexts/useWebBuyKeysContext';

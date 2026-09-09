@@ -30,7 +30,7 @@ export function useOperatorRuntime() {
 	const [, setRerender] = useState(0);
 	const {data, setData} = useStorage();
 	const whitelistedWallets = data?.whitelistedWallets;
-	const signerRef = useRef<ethers.Signer | undefined>();
+	const signerRef = useRef<ethers.Signer | undefined>(undefined);
 
 	// start sentry on launch / restart sentry
 	useEffect(() => {

@@ -9,7 +9,7 @@ export function BuyKeysFlow() {
 	const [queryQuantity, setQueryQuantity] = useState<number>(displayQuantity);
 	const [promoCode, setPromoCode] = useState<string>("");
 
-	const timer = useRef<ReturnType<typeof setTimeout>>();
+	const timer = useRef<ReturnType<typeof setTimeout> | undefined>(undefined);
 
 	const intermediaryStep = (_quantity: number) => {
 		clearTimeout(timer.current);

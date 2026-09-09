@@ -1,7 +1,6 @@
 import classNames from "classnames";
 import {atom, useAtomValue} from "jotai";
 import {ActionsRequiredBuyDrawer} from "../home/modals/actions-required/ActionsRequiredBuyDrawer";
-import {BuyKeysDrawer} from "../keys/modals/buy-keys/BuyKeysDrawer";
 import {ViewKeysDrawer} from "../home/modals/view-keys/ViewKeysDrawer";
 import {ActionsRequiredNotAccruingDrawer} from "../home/modals/actions-required/ActionsRequiredNotAccruingDrawer";
 import {ExportSentryDrawer} from "../home/modals/ExportSentryDrawer";
@@ -11,7 +10,6 @@ import {WhitelistDrawer} from "@/features/drawer/WhitelistDrawer";
 export enum DrawerView {
 	ActionsRequiredBuy,
 	ActionsRequiredNotAccruing,
-	BuyKeys,
 	ViewKeys,
 	Whitelist,
 	ImportSentry,
@@ -35,10 +33,6 @@ export function DrawerManager() {
 
 			{drawerState === DrawerView.ActionsRequiredNotAccruing && (
 				<ActionsRequiredNotAccruingDrawer/>
-			)}
-
-			{drawerState === DrawerView.BuyKeys && (
-				<BuyKeysDrawer/>
 			)}
 
 			{drawerState === DrawerView.ViewKeys && (

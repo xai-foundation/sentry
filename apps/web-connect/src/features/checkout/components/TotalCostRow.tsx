@@ -1,3 +1,4 @@
+import { JSX } from "react";
 import { formatWeiToEther } from "@sentry/core";
 import { useWebBuyKeysContext } from "../contexts/useWebBuyKeysContext";
 import { CURRENCIES } from "@/features/hooks";

@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { JSX, useState } from "react";
 import { PrimaryButton } from '../../../../../../packages/ui/src/rebrand/buttons/PrimaryButton';
 import ExternalLinkIcon from "../../../../../../packages/ui/src/rebrand/icons/ExternalLinkIcon";
 import { listOfCountries } from "../constants/constants";

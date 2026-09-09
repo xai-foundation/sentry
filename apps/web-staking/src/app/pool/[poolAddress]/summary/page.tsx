@@ -8,13 +8,14 @@ export const metadata: Metadata = {
   description: "Xai App Pool"
 };
 
-const Summary = async ({ params }: { params: { poolAddress: string } }) => {
+const Summary = async ({ params }: { params: Promise<{ poolAddress: string }> }) => {
+  const { poolAddress } = await params;
 
   let isBannedPool: boolean = false;
   let pool: PoolInfo | undefined = undefined;
 
   try {
-    pool = await findPool({ poolAddress: params.poolAddress });
+    pool = await findPool({ poolAddress });
     isBannedPool = pool.visibility == "banned";
   } catch (error) {
     console.error("Failed to load pool", error);

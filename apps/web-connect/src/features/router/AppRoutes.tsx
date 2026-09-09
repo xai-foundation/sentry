@@ -1,6 +1,6 @@
 import { HashRouter as Router, Navigate, Route, Routes } from 'react-router-dom';
 import { QueryClient, QueryClientProvider } from "react-query";
-import { CheckoutWrapper } from "../checkout";
+import { MintingDisabled } from "../checkout/MintingDisabled";
 import { AssignWallet } from "../wallet/routes/AssignWallet.js";
 import { UnassignWallet } from "@/features/wallet/routes/UnassignWallet";
 import { Header } from "@/features/header/Header";
@@ -29,7 +29,7 @@ export function AppRoutes() {
 					<Route path="/unassign-wallet/:operatorAddress" element={<UnassignWallet />} />
 					<Route path="/CNY-claim" element={<RedEnvelope2024 />} />
 					<Route path="/CNY-claim-temp" element={<ClaimRedEnvelope2024 />} />
-					<Route path="/" element={<CheckoutWrapper />} />
+					<Route path="/" element={<MintingDisabled />} />
 					<Route path="*" element={<Navigate to="/" replace={true} />} />
 				</Routes>
 				<Footer />

@@ -41,7 +41,7 @@ export const StakingOverviewComponent = ({ pagedPools }: { pagedPools: PagedPool
   const { switchChain } = useSwitchChain();
   const { writeContractAsync } = useWriteContract();
   const [receipt, setReceipt] = useState<`0x${string}` | undefined>();
-  const toastId = useRef<Id>();
+  const toastId = useRef<Id | undefined>(undefined);
 
   const isModal = useSearchParams().get("modal");
 

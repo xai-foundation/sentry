@@ -1,4 +1,4 @@
-import React, { ReactNode, useEffect, useState } from "react";
+import React, { JSX, ReactNode, useEffect, useState } from "react";
 import { PrimaryButton, TextButton } from "@/app/components/ui/buttons";
 import { CloseIcon } from "@/app/components/icons/IconsComponent";
 

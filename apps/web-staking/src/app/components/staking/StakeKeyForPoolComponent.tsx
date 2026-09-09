@@ -25,7 +25,7 @@ export default function StakeForPoolComponent() {
   const { poolAddress, isStake } = useParams<{ poolAddress: string, isStake: string }>();
   const [poolInfo, setPoolInfo] = useState({} as PoolInfo);
   const [receipt, setReceipt] = useState<`0x${string}` | undefined>();
-  const toastId = useRef<Id>()
+  const toastId = useRef<Id | undefined>(undefined)
 
   // Substitute Timeouts with useWaitForTransaction
   const { data, isError, isLoading, isSuccess, status } = useWaitForTransactionReceipt({

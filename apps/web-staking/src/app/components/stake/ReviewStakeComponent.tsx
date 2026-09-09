@@ -72,7 +72,7 @@ const ReviewStakeComponent = ({
   });
 
 
-  const toastId = useRef<Id>();
+  const toastId = useRef<Id | undefined>(undefined);
 
   const onUnstake = async (amount: string) => {
     const weiAmount = getWeb3Instance(network).web3.utils.toWei(

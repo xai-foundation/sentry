@@ -12,17 +12,18 @@ export const metadata: Metadata = {
   description: "Xai App Stake esXAI"
 };
 
-export default async function StakeEsXaiForPool({ params }: { params: StakeParams }) {
+export default async function StakeEsXaiForPool({ params }: { params: Promise<StakeParams> }) {
+  const { poolAddress } = await params;
 
   let isBannedPool: boolean = false;
   try {
 
-    isBannedPool = await isPoolBanned(params.poolAddress);
+    isBannedPool = await isPoolBanned(poolAddress);
   } catch (error) {
     console.error("Failed to load pool", error);
   }
 
   return (
-    <StakeComponent poolAddress={params.poolAddress} isBannedPool={isBannedPool} />
+    <StakeComponent poolAddress={poolAddress} isBannedPool={isBannedPool} />
   );
 }

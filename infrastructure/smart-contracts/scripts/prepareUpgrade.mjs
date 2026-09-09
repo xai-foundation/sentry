@@ -2,8 +2,8 @@ import hardhat from "hardhat";
 import { getUpgradeAndCallData } from "./utils/getUpgradeTransactionData.mjs";
 const { ethers, upgrades } = hardhat;
 
-const PROXY_TO_UPGRADE_ADDRESS = "0xProxyAddressToUpgrade";
-const NEW_IMPLEMENTATION_NAME = "ContractName";
+const PROXY_TO_UPGRADE_ADDRESS = "0xbc14d8563b248B79689ECbc43bBa53290e0b6b66";
+const NEW_IMPLEMENTATION_NAME = "NodeLicense11";
 
 async function main() {
     const [deployer] = (await ethers.getSigners());
@@ -23,8 +23,8 @@ async function main() {
     const upgradeTXData = getUpgradeAndCallData(
         {
             upgradeCallFunctionName: "initialize",
-            upgradeCallFunctionSignature: "function initialize(address _esXaiBurnFoundationRecipient, uint256 _esXaiBurnFoundationBasePoints)",
-            upgradeCallFunctionParams: ["0xaf88d065e77c8cC2239327C5EDb3A432268e5831", 100n]
+            upgradeCallFunctionSignature: "function initialize()",
+            upgradeCallFunctionParams: []
         }
     );
 

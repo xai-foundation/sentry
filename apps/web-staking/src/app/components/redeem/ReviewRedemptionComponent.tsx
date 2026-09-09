@@ -40,7 +40,7 @@ export default function ReviewRedemptionComponent({ onReturn, onRefresh, receive
 		hash: receipt,
 	});
 
-	const toastId = useRef<Id>();
+	const toastId = useRef<Id | undefined>(undefined);
 
 	const updateOnSuccess = useCallback(() => {
 		updateNotification("Successful redemption", toastId.current as Id, false, receipt, chainId);

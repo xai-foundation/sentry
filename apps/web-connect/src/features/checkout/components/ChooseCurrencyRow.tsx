@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { JSX, useState } from 'react';
 import { useWebBuyKeysContext } from '../contexts/useWebBuyKeysContext';
 import { CURRENCIES, Currency } from '@/features/hooks';
 import { Dropdown, DropdownItem } from "@sentry/ui";

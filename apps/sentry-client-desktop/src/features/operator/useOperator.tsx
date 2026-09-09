@@ -26,7 +26,7 @@ export function useOperator(): IUseOperatorResponse {
 
 	const [privateKey, setPrivateKey] = useAtom(privateKeyAtom);
 	const [publicKey, setPublicKey] = useState<string>();
-	const signerRef = useRef<any>();
+	const signerRef = useRef<any>(undefined);
 	const [error, setError] = useState<Error>();
 
 	const getOperatorFilePath = async () => {

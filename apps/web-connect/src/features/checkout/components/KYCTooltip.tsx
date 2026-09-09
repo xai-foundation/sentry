@@ -1,5 +1,5 @@
 import * as TooltipPrimitive from "@radix-ui/react-tooltip";
-import { PropsWithChildren } from "react";
+import { JSX, PropsWithChildren } from "react";
 
 /**
  * Props for the KYCTooltip component

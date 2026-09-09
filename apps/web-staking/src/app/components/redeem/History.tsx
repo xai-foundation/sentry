@@ -166,7 +166,7 @@ export default function History() {
 
 	const [loadingIndex, setLoadingIndex] = useState(-1);
 
-	const toastId = useRef<Id>();
+	const toastId = useRef<Id | undefined>(undefined);
 
 	const updateOnSuccess = useCallback(() => {
 		updateNotification(isCancel ? 'Cancel successful' : `Claim successful`, toastId.current as Id, false, receipt, chainId);

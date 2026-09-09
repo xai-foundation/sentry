@@ -1,4 +1,4 @@
-import { Dispatch, MutableRefObject, ReactNode, SetStateAction, useEffect, useRef } from "react";
+import { Dispatch, JSX, MutableRefObject, ReactNode, SetStateAction, useEffect, useRef } from "react";
 
 export const DropdownArrow = ({ width = 10, height = 3, className = "" }) => {
     return <svg

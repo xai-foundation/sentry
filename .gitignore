@@ -22,3 +22,9 @@ infrastructure/CodeSignTool-*
 
 
 .nx/cache
+
+# Database dumps and restores. These can contain production data and are large;
+# they must never be committed.
+restore-*.tar.gz
+*.bson
+dump/

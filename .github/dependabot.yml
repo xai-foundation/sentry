@@ -1,0 +1,38 @@
+version: 2
+
+updates:
+  # Only the workspaces we ship. infrastructure/* and docs are out of scope for
+  # dependency maintenance and would otherwise dominate every batch of pull
+  # requests.
+  - package-ecosystem: "npm"
+    directories:
+      - "/"
+      - "/apps/cli"
+      - "/apps/sentry-client-desktop"
+      - "/apps/web-connect"
+      - "/apps/web-staking"
+      - "/packages/core"
+      - "/packages/sentry-subgraph-client"
+      - "/packages/ui"
+    schedule:
+      interval: "monthly"
+    open-pull-requests-limit: 5
+    commit-message:
+      prefix: "chore(deps)"
+    groups:
+      # One pull request per month for the low-risk updates, so the queue stays
+      # reviewable. Majors are deliberately left ungrouped: each one needs its
+      # own migration and its own testing.
+      minor-and-patch:
+        update-types:
+          - "minor"
+          - "patch"
+    ignore:
+      # Upgrading these pulls @wagmi/connectors 8, which drags in
+      # @base-org/account and @coinbase/cdp-sdk. Those import @x402/evm and
+      # @x402/svm, which do not resolve, and the build fails. Revisit
+      # deliberately rather than through an automated bump.
+      - dependency-name: "@reown/appkit"
+        update-types: ["version-update:semver-major"]
+      - dependency-name: "@reown/appkit-adapter-wagmi"
+        update-types: ["version-update:semver-major"]

@@ -30,6 +30,10 @@
       "@sentry/*": ["../../packages/*/src"]
     }
   },
+  "include": [
+    "src",
+    "electron"
+  ],
   "references": [
     {
         "path": "../../packages/core/tsconfig.json"

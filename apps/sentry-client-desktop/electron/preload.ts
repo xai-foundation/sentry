@@ -3,7 +3,53 @@ import {contextBridge, ipcRenderer} from 'electron';
 // import {assignedWalletModalAtom} from "../src/components/DeepLinkManager";
 
 // --------- Expose some API to the Renderer process ---------
-contextBridge.exposeInMainWorld('ipcRenderer', withPrototype(ipcRenderer))
+//
+// Only the three methods the renderer actually uses are exposed, and each is
+// declared explicitly.
+//
+// This previously exposed the whole ipcRenderer object, patched by a helper that
+// copied its prototype methods onto the instance with Object.entries(). That only
+// sees enumerable properties. Electron's ipcRenderer methods are not enumerable,
+// so the helper copied nothing, contextBridge received an object with no
+// functions on it, and every call failed with
+// "window.ipcRenderer.on is not a function".
+
+type IpcListener = (...args: unknown[]) => void;
+
+// contextBridge hands the preload a proxy for each renderer function and returns
+// the same proxy for the same underlying function, so a listener can be looked up
+// again when the renderer asks to remove it. Keyed by listener, then by channel,
+// because the same function may be registered on more than one channel.
+const listenerWrappers = new WeakMap<IpcListener, Map<string, (...args: any[]) => void>>();
+
+contextBridge.exposeInMainWorld('ipcRenderer', {
+	invoke: (channel: string, ...args: unknown[]) => ipcRenderer.invoke(channel, ...args),
+
+	// The IpcRendererEvent is deliberately not forwarded. It carries the sender and
+	// its message ports, which are not cloneable across the context bridge. Listeners
+	// receive only the payload.
+	on: (channel: string, listener: IpcListener) => {
+		const wrapper = (_event: unknown, ...args: unknown[]) => listener(...args);
+
+		let byChannel = listenerWrappers.get(listener);
+		if (!byChannel) {
+			byChannel = new Map();
+			listenerWrappers.set(listener, byChannel);
+		}
+		byChannel.set(channel, wrapper);
+
+		ipcRenderer.on(channel, wrapper);
+	},
+
+	removeListener: (channel: string, listener: IpcListener) => {
+		const byChannel = listenerWrappers.get(listener);
+		const wrapper = byChannel?.get(channel);
+		if (!wrapper) return;
+
+		ipcRenderer.removeListener(channel, wrapper);
+		byChannel!.delete(channel);
+	},
+});
 
 contextBridge.exposeInMainWorld(
 	'electron',
@@ -12,25 +58,6 @@ contextBridge.exposeInMainWorld(
 		platform: process.platform,
 	}
 );
-
-// `exposeInMainWorld` can't detect attributes and methods of `prototype`, manually patching it.
-function withPrototype(obj: Record<string, any>) {
-	const protos = Object.getPrototypeOf(obj)
-
-	for (const [key, value] of Object.entries(protos)) {
-		if (Object.prototype.hasOwnProperty.call(obj, key)) continue
-
-		if (typeof value === 'function') {
-			// Some native APIs, like `NodeJS.EventEmitter['on']`, don't work in the Renderer process. Wrapping them into a function.
-			obj[key] = function (...args: any) {
-				return value.call(obj, ...args)
-			}
-		} else {
-			obj[key] = value
-		}
-	}
-	return obj
-}
 
 // --------- Preload scripts loading ---------
 function domReady(condition: DocumentReadyState[] = ['complete', 'interactive']) {

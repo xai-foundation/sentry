@@ -34,7 +34,7 @@ export const CardComponent = ({ title, redemptions }: OverviewCardProps) => {
     hash: receipt,
   });
 
-  const toastId = useRef<Id>();
+  const toastId = useRef<Id | undefined>(undefined);
 
 
   const onClaim = async (redemption: RedemptionRequest) => {

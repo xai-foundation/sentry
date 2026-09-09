@@ -11,8 +11,8 @@ export const metadata: Metadata = {
   description: "Xai App Staking"
 };
 
-export default async function Staking({ searchParams }: {
-  searchParams: {
+export default async function Staking({ searchParams: searchParamsPromise }: {
+  searchParams: Promise<{
     page: number,
     search: string,
     chainId: number,
@@ -21,8 +21,9 @@ export default async function Staking({ searchParams }: {
     sort: string,
     sortOrder: number;
     esXaiMinStake: number;
-  }
+  }>
 }) {
+  const searchParams = await searchParamsPromise;
 
   //TODO #188457244
   const isSortedByName = () => {

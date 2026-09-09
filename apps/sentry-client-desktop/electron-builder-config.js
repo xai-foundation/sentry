@@ -3,9 +3,12 @@
  */
 module.exports = {
     appId: "com.github.xaifoundation.sentry",
-    includeSubNodeModules: true,
     asar: true,
     productName: "Xai Sentry Node",
+    // electron-builder 26 validates executableName, which otherwise derives from
+    // the scoped package name as "@sentrysentry-client-desktop" and is rejected.
+    // Linux only: Windows and macOS name the binary from productName.
+    executableName: "xai-sentry-node",
     directories: {
       output: "release"
     },
@@ -51,10 +54,13 @@ module.exports = {
       target: [
         "nsis"
       ],
-      publisherName: "Xai Foundation",
       verifyUpdateCodeSignature: false,
       artifactName: "sentry-client-windows.${ext}",
-      icon: "public/xai.ico"
+      icon: "public/xai.ico",
+      // electron-builder 26 moved the signtool options under signtoolOptions
+      signtoolOptions: {
+        publisherName: "Xai Foundation"
+      }
     },
     nsis: {
       oneClick: false,
