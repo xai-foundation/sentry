@@ -34,6 +34,7 @@
     "react-dom": "^19.2.8",
     "react-icons": "^5.0.1",
     "react-toastify": "^10.0.6",
+    "recharts": "^3.10.1",
     "sharp": "^0.35.3",
     "wagmi": "^2.12.1",
     "web3": "^4.4.0"

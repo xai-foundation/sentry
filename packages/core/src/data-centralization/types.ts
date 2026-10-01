@@ -186,3 +186,77 @@ export type RawPoolInfo = {
     _ownerRequestedUnstakeKeyAmount: BigInt;
     _ownerLatestUnstakeRequestLockTime: BigInt;
 };
+/**
+ * Daily aggregate of the Referee challenge emissions, one document per UTC day and network.
+ * Token amounts are stored as numbers in whole tokens (not wei).
+ */
+export interface IEsXaiEmissionDaily {
+    _id: mongoose.ObjectId;
+    /** UTC day in the format YYYY-MM-DD */
+    day: string;
+    network: string;
+    /** esXAI allocated to claimers by all challenges created on this day (the esXAI emission). */
+    allocatedEsXai: number;
+    /** esXAI minted through claims for the challenges created on this day (can still grow while challenges are open). */
+    mintedEsXai: number;
+    /** XAI minted for the gas subsidy by all challenges created on this day. */
+    gasSubsidyXai: number;
+    challengeCount: number;
+    firstChallengeNumber: number;
+    lastChallengeNumber: number;
+    updatedAt: Date;
+    createdAt: Date;
+}
+
+export const EsXaiEmissionDailySchema = new mongoose.Schema<IEsXaiEmissionDaily>({
+    day: {
+        type: String,
+        required: true
+    },
+    network: {
+        type: String,
+        required: true
+    },
+    allocatedEsXai: {
+        type: Number,
+        required: true,
+        default: 0
+    },
+    mintedEsXai: {
+        type: Number,
+        required: true,
+        default: 0
+    },
+    gasSubsidyXai: {
+        type: Number,
+        required: true,
+        default: 0
+    },
+    challengeCount: {
+        type: Number,
+        required: true,
+        default: 0
+    },
+    firstChallengeNumber: {
+        type: Number,
+        required: true,
+        default: 0
+    },
+    lastChallengeNumber: {
+        type: Number,
+        required: true,
+        default: 0
+    },
+    updatedAt: {
+        type: Date,
+        required: true,
+        default: Date.now
+    },
+    createdAt: {
+        type: Date,
+        required: true,
+        default: Date.now
+    }
+});
+
+EsXaiEmissionDailySchema.index({ network: 1, day: 1 }, { unique: true });
