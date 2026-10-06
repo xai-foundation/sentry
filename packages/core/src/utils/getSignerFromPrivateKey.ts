@@ -1,5 +1,6 @@
 import { ethers } from 'ethers';
 import { getProvider } from './getProvider.js';
+import { ArbitrumWallet } from './ArbitrumWallet.js';
 
 /**
  * Creates an ethers signer from a given private key.
@@ -8,7 +9,7 @@ import { getProvider } from './getProvider.js';
  */
 export function getSignerFromPrivateKey(privateKey: string): { signer: ethers.Signer, address: string, privateKey: string } {
     const wallet = new ethers.Wallet(privateKey);
-    const signer = new ethers.Wallet(wallet.privateKey, getProvider());
+    const signer = new ArbitrumWallet(wallet.privateKey, getProvider());
 
     return { signer, address: wallet.address, privateKey: wallet.privateKey };
 }
