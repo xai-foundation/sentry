@@ -11,6 +11,7 @@ import { IPool, PoolSchema } from './types.js';
 import { getRewardRatesFromGraph } from '../subgraph/getRewardRatesFromGraph.js';
 import { sendSlackNotification } from '../utils/sendSlackNotification.js';
 import { syncEsXaiEmissions, getUtcDayStart, ESXAI_EMISSION_RESYNC_DAYS } from './esXaiEmissionSync.js';
+import { syncSentryKeySales } from './sentryKeySaleSync.js';
 
 /**
  * Arguments required to initialize the data centralization runtime.
@@ -98,24 +99,30 @@ export async function dataCentralizationRuntime({
 	}).stop;
 
 	/**
-	 * Recomputes the daily esXAI emission aggregates for the last few UTC days.
+	 * Recomputes the daily stats aggregates (esXAI emissions, Sentry Key sales) for the last few UTC days.
 	 * Runs at startup and after every new challenge. Errors are reported but never interrupt the pool sync.
 	 */
-	const resyncRecentEsXaiEmissions = async (trigger: string) => {
+	const resyncRecentStats = async (trigger: string) => {
+		const fromTimestamp = getUtcDayStart(ESXAI_EMISSION_RESYNC_DAYS - 1);
 		try {
-			const result = await retry(() => syncEsXaiEmissions({
-				fromTimestamp: getUtcDayStart(ESXAI_EMISSION_RESYNC_DAYS - 1),
-				logFunction
-			}), 3);
+			const result = await retry(() => syncEsXaiEmissions({ fromTimestamp, logFunction }), 3);
 			logFunction(`esXAI emission sync (${trigger}): ${result.challenges} challenges into ${result.days} days`);
 		} catch (error) {
 			const errorMessage = error instanceof Error ? error.message : String(error);
 			logFunction(`Error in esXAI emission sync (${trigger}): ${errorMessage}`);
 			await sendSlackNotification(slackWebHookUrl, `Error in esXAI emission sync (${trigger}): ${errorMessage}`, logFunction);
 		}
+		try {
+			const result = await retry(() => syncSentryKeySales({ fromTimestamp, logFunction }), 3);
+			logFunction(`Sentry Key sale sync (${trigger}): ${result.days} days`);
+		} catch (error) {
+			const errorMessage = error instanceof Error ? error.message : String(error);
+			logFunction(`Error in Sentry Key sale sync (${trigger}): ${errorMessage}`);
+			await sendSlackNotification(slackWebHookUrl, `Error in Sentry Key sale sync (${trigger}): ${errorMessage}`, logFunction);
+		}
 	};
 
-	resyncRecentEsXaiEmissions("startup");
+	resyncRecentStats("startup");
 
 	const closeChallengeListener = listenForChallenges(
 		async (challengeNumber: bigint, challenge: Challenge, event?: any) => {
@@ -162,7 +169,7 @@ export async function dataCentralizationRuntime({
 				logFunction(`Error in challenge listener: ${errorMessage}`);
 			}
 
-			await resyncRecentEsXaiEmissions(`challenge ${challengeNumber}`);
+			await resyncRecentStats(`challenge ${challengeNumber}`);
 		},
 		async (error: Error) => {
 			const errorMessage = `Error in listenForChallenges: ${error.message}`;

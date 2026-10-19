@@ -260,3 +260,88 @@ export const EsXaiEmissionDailySchema = new mongoose.Schema<IEsXaiEmissionDaily>
 });
 
 EsXaiEmissionDailySchema.index({ network: 1, day: 1 }, { unique: true });
+
+/**
+ * Daily aggregate of Sentry Key (NodeLicense) mints, one document per UTC day and network.
+ * Counts are raw key counts of that day; keyMultiplier tells how to express them in post-split units.
+ */
+export interface ISentryKeySaleDaily {
+    _id: mongoose.ObjectId;
+    /** UTC day in the format YYYY-MM-DD */
+    day: string;
+    network: string;
+    /** All keys minted on this day (sales plus airdrop) */
+    mintedKeys: number;
+    /** Keys minted by the tiny keys airdrop on this day (not sales) */
+    airdropKeys: number;
+    /** Keys sold on this day, in the key units of that day */
+    soldKeys: number;
+    /** How many of today's keys one key of this day represents (100 before the 1:100 split, 1 after) */
+    keyMultiplier: number;
+    /** soldKeys * keyMultiplier, so that days before and after the split are comparable */
+    soldKeysNormalized: number;
+    /** Lowest key id minted on this day (0 when none) */
+    firstKeyId: number;
+    /** Highest key id minted on this day (0 when none) */
+    lastKeyId: number;
+    updatedAt: Date;
+    createdAt: Date;
+}
+
+export const SentryKeySaleDailySchema = new mongoose.Schema<ISentryKeySaleDaily>({
+    day: {
+        type: String,
+        required: true
+    },
+    network: {
+        type: String,
+        required: true
+    },
+    mintedKeys: {
+        type: Number,
+        required: true,
+        default: 0
+    },
+    airdropKeys: {
+        type: Number,
+        required: true,
+        default: 0
+    },
+    soldKeys: {
+        type: Number,
+        required: true,
+        default: 0
+    },
+    keyMultiplier: {
+        type: Number,
+        required: true,
+        default: 1
+    },
+    soldKeysNormalized: {
+        type: Number,
+        required: true,
+        default: 0
+    },
+    firstKeyId: {
+        type: Number,
+        required: true,
+        default: 0
+    },
+    lastKeyId: {
+        type: Number,
+        required: true,
+        default: 0
+    },
+    updatedAt: {
+        type: Date,
+        required: true,
+        default: Date.now
+    },
+    createdAt: {
+        type: Date,
+        required: true,
+        default: Date.now
+    }
+});
+
+SentryKeySaleDailySchema.index({ network: 1, day: 1 }, { unique: true });
