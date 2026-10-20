@@ -128,7 +128,7 @@ export function Sidebar() {
 					</a>
 					<div className="text-elementalGrey text-[15px] mt-[20px]">
 						<p>v{import.meta.env.APP_VERSION}</p>
-						<p>©2024 XAI. ALL RIGHTS RESERVED</p>
+						<p>©2026 XAI. ALL RIGHTS RESERVED</p>
 					</div>
 				</div>
 			</div>

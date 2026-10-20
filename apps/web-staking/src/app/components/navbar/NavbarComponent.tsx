@@ -159,7 +159,7 @@ export default function NavbarComponent() {
 						</Link>
 					</div>
 				    <div className="mt-[25px] mb-[25px] px-4 text-white font-light text-lg uppercase">
-                        <p>&copy;2024 XAI</p>
+                        <p>&copy;2026 XAI</p>
                     </div>
 				</NavbarMenuItem>
 			</NavbarMenu>

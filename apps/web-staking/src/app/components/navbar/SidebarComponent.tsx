@@ -112,7 +112,7 @@ export default function SidebarComponent() {
             content="PRIVACY POLICY"
             customClass="text-sm mb-[15px]"
           />
-          <span className="pl-4 text-slateGray">&copy;2024 XAI</span>
+          <span className="pl-4 text-slateGray">&copy;2026 XAI</span>
         </div>
       </div>
     </div>
