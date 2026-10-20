@@ -5,3 +5,4 @@ export * from "./getTierIndexByStakedAmount.js";
 export * from "./getMaxStakeAmountPerLicense.js";
 export * from "./poolDataSync.js";
 export * from "./esXaiEmissionSync.js";
+export * from "./sentryKeySaleSync.js";
