@@ -49,7 +49,7 @@ export function Header() {
 								<DiscordIcon className={"hover:fill-hornetSting fill-white duration-200 ease-in"} />
 							}
 							externalTab
-							link={"https://discord.com/invite/xaigames"}
+							link={"https://discord.gg/k6K6bA6T6F"}
 							customClass={"no-underline !font-bold text-xl "}
 						/>
 

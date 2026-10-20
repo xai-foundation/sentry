@@ -103,7 +103,7 @@ export function Sidebar() {
 					</a>
 
 					<a
-						onClick={() => window.electron.openExternal('https://discord.com/invite/xaigames')}
+						onClick={() => window.electron.openExternal('https://discord.gg/k6K6bA6T6F')}
 						className="flex items-center mb-[5px] text-base font-medium text-white cursor-pointer gap-2 hover:text-hornetSting duration-200 ease-in"
 					>
 						<FaDiscord size={20}/> DISCORD

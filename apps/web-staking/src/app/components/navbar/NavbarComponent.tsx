@@ -147,7 +147,7 @@ export default function NavbarComponent() {
 					<div className="flex flex-col mb-5">
 						<LinkLogoComponent link="https://xai-foundation.gitbook.io/xai-network/xai-blockchain/welcome-to-xai"
 							content="GITBOOK" Icon={GitBook} customClass="mb-[10px]" />
-						<LinkLogoComponent link="https://discord.com/invite/xaigames" content="DISCORD" Icon={Discord}
+						<LinkLogoComponent link="https://discord.gg/k6K6bA6T6F" content="DISCORD" Icon={Discord}
 							customClass="mb-[10px]" />
 						<LinkLogoComponent link="https://twitter.com/xai_games" content="X" Icon={X} customClass="mb-[10px]" />
 						<LinkLogoComponent link="https://t.me/XaiSentryNodes" content="TELEGRAM" Icon={Telegram}

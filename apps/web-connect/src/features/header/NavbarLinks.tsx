@@ -26,7 +26,7 @@ const NavbarLinks = () => {
                                 {translate("discord")}
                             </span>
                 }
-                link={"https://discord.com/invite/xaigames"}
+                link={"https://discord.gg/k6K6bA6T6F"}
                 externalTab
                 customClass={"no-underline !font-bold text-xl "}
             />

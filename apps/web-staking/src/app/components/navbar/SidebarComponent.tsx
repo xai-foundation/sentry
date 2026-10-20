@@ -75,7 +75,7 @@ export default function SidebarComponent() {
           />
           <LinkLogoComponent
             externalTab
-            link="https://discord.com/invite/xaigames"
+            link="https://discord.gg/k6K6bA6T6F"
             content="DISCORD"
             Icon={Discord}
             customClass=""

@@ -8,7 +8,7 @@ export const SEPOLIA_DEPLOY_OPTIONS = {
             poolData: {
                 address: "",
                 metaData: ["Cool Pool", "This pool was created automatically upon deployment for testing purposes", "https://images.unsplash.com/photo-1475598322381-f1b499717dda?q=80&w=2076&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"],
-                socials: ["https://xai.games/", "https://discord.com/invite/xaigames", "https://t.me/XaiSentryNodes", "https://twitter.com/XAI_GAMES"],
+                socials: ["https://xai.games/", "https://discord.gg/k6K6bA6T6F", "https://t.me/XaiSentryNodes", "https://twitter.com/XAI_GAMES"],
                 trackerDetails: [
                     ["Cool Pool Keys", "CPK"],
                     ["Cool Pool EsXAI", "CPEXai"],
@@ -24,7 +24,7 @@ export const SEPOLIA_DEPLOY_OPTIONS = {
             poolData: {
                 address: "",
                 metaData: ["Community Pool", "This pool was created automatically upon deployment for testing purposes", "https://plus.unsplash.com/premium_photo-1681505195930-388c317b7a76?q=80&w=1984&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"],
-                socials: ["https://xai.games/", "https://discord.com/invite/xaigames", "https://t.me/XaiSentryNodes", "https://twitter.com/XAI_GAMES"],
+                socials: ["https://xai.games/", "https://discord.gg/k6K6bA6T6F", "https://t.me/XaiSentryNodes", "https://twitter.com/XAI_GAMES"],
                 trackerDetails: [
                     ["Community Pool Keys", "CMK"],
                     ["Community Pool EsXAI", "CMEXai"],
@@ -40,7 +40,7 @@ export const SEPOLIA_DEPLOY_OPTIONS = {
             poolData: {
                 address: "",
                 metaData: ["Operator Pool", "This pool was created automatically upon deployment for testing purposes", "https://images.unsplash.com/photo-1607764787121-5fb28a979ffe?q=80&w=1974&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"],
-                socials: ["https://xai.games/", "https://discord.com/invite/xaigames", "https://t.me/XaiSentryNodes", "https://twitter.com/XAI_GAMES"],
+                socials: ["https://xai.games/", "https://discord.gg/k6K6bA6T6F", "https://t.me/XaiSentryNodes", "https://twitter.com/XAI_GAMES"],
                 trackerDetails: [
                     ["Operator Pool Keys", "OPK"],
                     ["Operator Pool EsXAI", "OPEXai"],
@@ -56,7 +56,7 @@ export const SEPOLIA_DEPLOY_OPTIONS = {
             poolData: {
                 address: "",
                 metaData: ["Fun Pool", "This pool was created automatically upon deployment for testing purposes", "https://images.unsplash.com/photo-1489367874814-f5d040621dd8?q=80&w=2046&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"],
-                socials: ["https://xai.games/", "https://discord.com/invite/xaigames", "https://t.me/XaiSentryNodes", "https://twitter.com/XAI_GAMES"],
+                socials: ["https://xai.games/", "https://discord.gg/k6K6bA6T6F", "https://t.me/XaiSentryNodes", "https://twitter.com/XAI_GAMES"],
                 trackerDetails: [
                     ["Fun Pool Keys", "FPK"],
                     ["Fun Pool EsXAI", "FPEXai"],
